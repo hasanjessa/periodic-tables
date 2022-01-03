@@ -21,7 +21,7 @@ describe("US-08 - Change an existing reservation - E2E", () => {
 
   beforeAll(async () => {
     await fsPromises.mkdir("./.screenshots", { recursive: true });
-    setDefaultOptions({ timeout: 1000 });
+	setDefaultOptions({ timeout: 1000 });
     browser = await puppeteer.launch();
   });
 
@@ -174,8 +174,11 @@ describe("US-08 - Change an existing reservation - E2E", () => {
     });
 
     test("filling and submitting form updates the reservation", async () => {
+
       const firstNameInput = await page.$("input[name=first_name]");
+
       await firstNameInput.click({ clickCount: 3 });
+
       await firstNameInput.type("John");
 
       const [submitButton] = await page.$x(
