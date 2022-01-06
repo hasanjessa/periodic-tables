@@ -19,11 +19,11 @@ This page allows the user to search for a reservation by phone number either par
 
 ### `Before` Search screenshot
 
-![Search Before](./pictures/Search_before.png)
+![Search Before](./pictures/search.png)
 
 ### `After` search screenshot
 
-![Search After](./pictures/Search_after.png)
+![Search After](./pictures/search-functionality.png)
 
 ## `/reservations/new`
 
