@@ -1,112 +1,112 @@
-import React from "react";
-import { useHistory } from "react-router-dom";
-import { previous, next, today } from "../utils/date-time";
+import React, { useEffect, useState } from "react";
+import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
-import ReservationRow from "./ReservationRow";
-import TableRow from "./TableRow";
-
+import { useHistory } from "react-router-dom";
+import useQuery from "../utils/useQuery";
+import Reservation from "../Reservation";
+import Table from "../Table";
 /**
  * Defines the dashboard page.
+ * @param date
+ *  the date for which the user wants to view reservations.
+ * @returns {JSX.Element}
  */
-function Dashboard({ date, reservations, reservationsError, tables, tablesError, loadDashboard }) {
+function Dashboard({ date }) {
+	const [reservations, setReservations] = useState([]);
+	const [tables, setTables] = useState([]);
+	const [reservationsError, setReservationsError] = useState(null);
+	const query = useQuery();
+	const theDate = query.get("date");
 	const history = useHistory();
 
-	const reservationsJSX = () => {
-		return reservations.map((reservation) => 
-			<ReservationRow key={reservation.reservation_id} reservation={reservation} loadDashboard={loadDashboard} />);
-	};
-
-	const tablesJSX = () => {
-		return tables.map((table) => 
-			<TableRow key={table.table_id} table={table} loadDashboard={loadDashboard} />);
-	};
-
-	/**
-	 * Allows the user to go forward/backward days on the calendar.
-	 */
-	function handleClick({ target }) {
-		let newDate;
-		let useDate;
-
-		if(!date) {
-			useDate = today();
+	useEffect(() => {
+		if (!theDate) history.push(`/dashboard?date=${date}`);
+	}, [query, history, theDate, date]);
+	useEffect(loadDashboard, [date, history, theDate]);
+	useEffect(() => {
+		const abortController = new AbortController();
+		listReservations({ date }, abortController.signal)
+			.then(setReservations)
+			.catch(setReservationsError);
+	}, [tables, date]);
+	function loadDashboard() {
+		if (theDate !== date) {
+			history.push(`/dashboard?date=${date}`);
 		}
-		else {
-			useDate = date;
-		}
-
-		if(target.name === "previous") {
-			newDate = previous(useDate);
-		}
-		else if(target.name === "next") {
-			newDate = next(useDate);
-		}
-		else {
-			newDate = today();
-		}
-
+		const abortController = new AbortController();
+		const abortController2 = new AbortController();
+		setReservationsError(null);
+		listReservations({ date }, abortController.signal)
+			.then(setReservations)
+			.catch(setReservationsError);
+		listTables(abortController2.signal).then(setTables);
+		return () => abortController.abort();
+	}
+	function changeDateUrl(scalar) {
+		const temp = date.split("-");
+		const newDate = new Date(
+			Number(temp[0]),
+			Number(temp[1]) - 1,
+			Number(temp[2]) + scalar
+		)
+			.toISOString()
+			.split("T")[0];
 		history.push(`/dashboard?date=${newDate}`);
 	}
-
 	return (
 		<main>
-		<h1>Dashboard</h1>
-
-		<h4 className="mb-0">Reservations for {date}</h4>
-
-				<button className="btn btn-secondary m-1" type="button" name="previous" onClick={handleClick}>Previous</button>
-				<button className="btn btn-primary m-1" type="button" name="today" onClick={handleClick}>Today</button>
-				<button className="btn btn-secondary m-1" type="button" name="next" onClick={handleClick}>Next</button>
-				
-				<ErrorAlert error={reservationsError} />
-
-				<table className="table table-hover m-1">
-					<thead className="thead-light">
-						<tr>
-							<th scope="col">ID</th>
-							<th scope="col">First Name</th>
-							<th scope="col">Last Name</th>
-							<th scope="col">Mobile Number</th>
-							<th scope="col">Date</th>
-							<th scope="col">Time</th>
-							<th scope="col">People</th>
-							<th scope="col">Status</th>
-							<th scope="col">Edit</th>
-							<th scope="col">Cancel</th>
-							<th scope="col">Seat</th>
-						</tr>
-					</thead>
-					
-					<tbody>
-						{reservationsJSX()}
-					</tbody>
-				</table>
-		
-				<br />
-				<br />
-
-				<h4 className="mb-0">Tables</h4>
-
-				<ErrorAlert error={tablesError} />
-
-				<table className="table table-hover m-1">
-					<thead className="thead-light">
-						<tr>
-							<th scope="col">Table ID</th>
-							<th scope="col">Table Name</th>
-							<th scope="col">Capacity</th>
-							<th scope="col">Status</th>
-							<th scope="col">Reservation ID</th>
-							<th scope="col">Finish</th>
-						</tr>
-					</thead>
-					
-					<tbody>
-						{tablesJSX()}
-					</tbody>
-				</table>
+			<h1>Dashboard</h1>
+			<div className="ml-3">
+				<button
+					onClick={() => {
+						changeDateUrl(1);
+					}}
+					className="btn btn-primary mr-1"
+				>
+					Next
+				</button>
+				<button
+					onClick={() => {
+						changeDateUrl(-1);
+					}}
+					className="btn btn-secondary mr-1"
+				>
+					Previous
+				</button>
+				<button
+					onClick={() => {
+						history.push(`/dashboard`);
+					}}
+					className="btn btn-info"
+				>
+					Today
+				</button>
+			</div>
+			<div className="d-md-flex mb-3"></div>
+			<ErrorAlert error={reservationsError} />
+			<div className="row">
+				<div className="col-md-6 col-sm-12">
+					<h4 className="mb-0">Reservations for date: {date}</h4>
+					{reservations.map((reservation) =>
+						reservation.status === "finished" ||
+						reservation.status === "cancelled" ? null : (
+							<Reservation
+								data={reservation}
+								setReservations={setReservations}
+								date={date}
+							/>
+						)
+					)}
+				</div>
+				<div className="col-md-6 col-sm-12">
+					<h4>Tables</h4>
+					{tables.map((table) => (
+						<Table data={table} setTables={setTables} />
+					))}
+				</div>
+			</div>
 		</main>
-  	);
+	);
 }
 
 export default Dashboard;
