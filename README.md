@@ -11,7 +11,7 @@ This page displays the reservations for a specific date that aren't `completed` 
 
 ### `DashBoard` ScreenShot
 
-![Dashboard](./pictures/Dashboard.png)
+![Dashboard](./pictures/dashboard.png)
 
 ## `/search`
 
@@ -19,11 +19,11 @@ This page allows the user to search for a reservation by phone number either par
 
 ### `Before` Search screenshot
 
-![Search Before](./pictures/Search_before.png)
+![Search Before](./pictures/search.png)
 
 ### `After` search screenshot
 
-![Search After](./pictures/Search_after.png)
+![Search After](./pictures/search-functionality.png)
 
 ## `/reservations/new`
 
@@ -33,47 +33,19 @@ Once a new reservation has been submitted successfully it will redirect to the d
 
 ### `Before` Submit Screenshot
 
-![New Reservation Before](./pictures/NewReservation_before.png)
+![New Reservation Before](./pictures/new-reservation.png)
 
 ### `After` Submit screenshot
 
-![New Reservation After](./pictures/NewReservation_after.png)
+![New Reservation After](./pictures/new-reservation-added.png)
 
 ## `/reservations/:reservation_id/edit`
 
 This route is called by clicking `edit` on an existing reservation that has the status `booked` (no other status can be edited). Once edit is clicked it goes to a form identical to the new reservation form but with current values filled in. When successfully submitted the form redirects to the dashboard/`date of reservation`.
 
-### Dashboard `Edit Button` Screenshot
-
-![Edit Reservation Button](./pictures/EditButton.png)
-
-### `Before` Submit Screenshot
-
-![Edit Reservation Before](./pictures/EditReservation_before.png)
-
-### `After` Submit Screenshot
-
-![Edit Reservation After](./pictures/EditReservation_after.png)
-
 ## `/reservations/:reservation_id/seat`
 
 This route is called by clicking `seat` on an existing reservation that has the status `booked` (no other status can be seated). Displays a form to assign a reservation a table. After the form is successfully submitted it redirects to dashboard. After a table has been seated the table should show `Occupied` and display a `Finish` button that when clicked finishes the reservation (which hides the reservation) then changes table's status to `free`.
-
-### Dashboard `Seat Button` screenshot
-
-![Seat Button](./pictures/SeatButton.png)
-
-### `Before` Submit Screenshot
-
-![Seat Before](./pictures/SeatFormBefore.png)
-
-### `After` Submit Screenshot
-
-![Seat After](./pictures/SeatFormAfter.png)
-
-### `Finish button` Screenshot
-
-![Seat After](./pictures/FinishButton.png)
 
 ## `/tables/new`
 
@@ -83,11 +55,8 @@ Once a new table has been submitted successfully it will redirect to the dashboa
 
 ### `Before` submit Screenshot
 
-![Table Before](./pictures/NewTableBefore.png)
+![Table Before](./pictures/new-table.png)
 
-### `After` submit Screenshot
-
-![Table After](./pictures/NewTableAfter.png)
 
 # API Documentation
 
@@ -328,41 +297,3 @@ data: {
 }
 ```
 
-<br>
-
-# Installation Instructions
-
-In order to effectively install and use this application locally, you will need to either clone the repo or download the zip. You will then need to navigate to the top level of the project in your bash terminal and:
-
-1. run `npm i`
-2. `cd front-end && npm i`
-3. `cd ../back-end && npm i`
-
-Now that you have all of the scripts installed, you will need two different PostgreSQL database instances to either run the application locally or test it.
-
-You must make a `.env` file in both the front-end and back-end directories.
-
-Load the back-end `.env` file with two environment variables with the values of your two database URLs like so:
-
-```
-DATABASE_URL_DEVELOPMENT=development-data-base-url-goes-here
-DATABASE_URL_TEST=test-data-base-url-goes-here
-```
-
-In the front-end `.env` file, enter:
-
-```
-REACT_APP_API_BASE_URL=http://localhost:5000
-```
-
-Now you will need to migrate the tables to the development database. Don't bother doing it for the test database, though. The tests are carrying that out for you each time. From the back-end folder:
-
-1. `npx knex migrate:latest`
-2. `npx knex seed:run`
-
-Now you are ready to run the server locally. From the top level of the project, run `npm run start:dev` if you would like to run the server and application.
-
-If you would like to test the application, you can view the `package.json` files and use the testing scripts provided there. Unfortunately, some of the provided testing scripts do not function. However, the ones that certainly do are:
-
-1. all of those that are structured like `test:5:backend` or `test:3:frontend`
-2. `test:frontend` and `test:backend`
