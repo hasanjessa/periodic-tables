@@ -1,52 +1,55 @@
 const knex = require("../db/connection");
+
 const tableName = "reservations";
 
-function listByDate(date) {
+function list(date, mobile_number) {
+	if(date) {
+		return knex(tableName)
+			.select("*")
+			.where({ reservation_date: date })
+			.orderBy("reservation_time", "asc");
+	}
+
+	if(mobile_number) {
+		return knex(tableName)
+			.select("*")
+			.where('mobile_number', 'like', `${mobile_number}%`);
+	}
+
 	return knex(tableName)
-		.select("*")
-		.where({ "reservations.reservation_date": date })
-		.whereNot({ "reservations.status": "finished" })
-		.orderBy("reservation_time", "asc");
+		.select("*");
 }
-function create(data) {
+
+function create(reservation) {
 	return knex(tableName)
-		.insert(data)
-		.returning("*")
-		.then((createdRecords) => createdRecords[0]);
+		.insert(reservation)
+		.returning("*");
 }
-function read(id) {
+
+function read(reservation_id) {
+    return knex(tableName)
+        .select("*")
+        .where({ reservation_id: reservation_id })
+        .first();
+}
+
+function update(reservation_id, status) {
+    return knex(tableName)
+        .where({ reservation_id: reservation_id })
+        .update({ status: status });
+}
+
+function edit(reservation_id, reservation) {
 	return knex(tableName)
-		.where({ "reservations.reservation_id": id })
-		.returning("*")
-		.then((createdRecords) => createdRecords[0]);
+		.where({ reservation_id: reservation_id })
+		.update({ ...reservation })
+		.returning("*");
 }
-function update(id, status) {
-	return knex(tableName)
-		.where({ reservation_id: id })
-		.update("status", status)
-		.returning("*")
-		.then((createdRecords) => createdRecords[0]);
-}
-function updateReservation(id, reservation) {
-	return knex(tableName)
-		.where({ reservation_id: id })
-		.update(reservation)
-		.returning("*")
-		.then((createdRecords) => createdRecords[0]);
-}
-function search(mobile_number) {
-	return knex(tableName)
-		.whereRaw(
-			"translate(mobile_number, '() -', '') like ?",
-			`%${mobile_number.replace(/\D/g, "")}%`
-		)
-		.orderBy("reservation_date");
-}
+
 module.exports = {
-	listByDate,
+	list,
 	create,
 	read,
 	update,
-	updateReservation,
-	search,
-};
+	edit,
+}

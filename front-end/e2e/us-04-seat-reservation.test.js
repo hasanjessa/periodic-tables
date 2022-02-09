@@ -220,8 +220,8 @@ describe("US-04 - Seat reservation - E2E", () => {
         waitUntil: "networkidle0",
       });
     });
-
-    // eslint-disable-next-line no-template-curly-in-string
+    
+    // eslint-disable-next-line
     test("seat button has href with /reservations/${reservation_id}/seat", async () => {
       await page.screenshot({
         path: ".screenshots/us-04-dashboard-seat-button-before.png",
