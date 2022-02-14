@@ -44,7 +44,7 @@ export default function SeatReservation({ tables, loadDashboard }) {
 	/**
 	 * Whenever a user submits the form, validate and make the API call.
 	 */
-	function handleSubmit(event) {
+	 function handleSubmit(event) {
 		event.preventDefault();
 		const abortController = new AbortController();
 
@@ -61,7 +61,7 @@ export default function SeatReservation({ tables, loadDashboard }) {
 	/**
 	 * Make sure the reservation can be seated at a particular table.
 	 */
-	function validateSeat() {
+	 function validateSeat() {
 		const foundErrors = [];
 
 		const foundTable = tables.find((table) => table.table_id === Number(table_id));
@@ -85,7 +85,10 @@ export default function SeatReservation({ tables, loadDashboard }) {
 
 		setErrors(foundErrors);
 
-		return foundErrors.length === 0;
+		if (foundErrors.length === 0) {
+			return "Please select a table"
+		}
+		return foundErrors
 	}
 
 	const tableOptionsJSX = () => {
@@ -99,7 +102,7 @@ export default function SeatReservation({ tables, loadDashboard }) {
 
 	return (
 		<form className="form-select">
-			{errorsJSX()}
+			{/* {errorsJSX()} */}
 			<ErrorAlert error={apiError} />
 			<ErrorAlert error={reservationsError} />
 
