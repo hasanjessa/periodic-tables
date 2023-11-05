@@ -97,7 +97,7 @@ function Dashboard({ date, reservations, reservationsError, tables, tablesError,
 							<th scope="col">Capacity</th>
 							<th scope="col">Status</th>
 							<th scope="col">Reservation ID</th>
-							<th scope="col">Finish</th>
+							<th scope="col">Actions</th>
 						</tr>
 					</thead>
 					

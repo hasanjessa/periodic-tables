@@ -31,7 +31,7 @@ export default function TableRow({ table, loadDashboard }) {
 
 			{table.status === "occupied" &&
 				<td>
-					<button data-table-id-finish={table.table_id} onClick={handleFinish} type="button">Finish</button>
+					<button data-table-id-finish={table.table_id} className="btn btn-primary" onClick={handleFinish} type="button">Finish</button>
 				</td>
 			}
 		</tr>
